@@ -187,7 +187,7 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 
 	for _, s := range o.optionsStrings() {
 		if strings.Contains(s, ",") {
-			return nil, fmt.Errorf("found ',' in option string %q", s)
+            escapeComma(s)
 		}
 	}
 
