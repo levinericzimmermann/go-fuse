@@ -185,10 +185,24 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 		o.Name = strings.Replace(name[:l], ",", ";", -1)
 	}
 
+    // XXX: Is this really the correct place where we should adjust
+    // the options? How's if we simply change 'optionsStrings' method?
+    //
+    // git grep "optionsStrings"
+    //    fuse/mount_darwin.go:           "-o", strings.Join(opts.optionsStrings(), ","),
+    //    fuse/mount_linux.go:    if s := opts.optionsStrings(); len(s) > 0 {
+    //    fuse/server.go: for _, s := range o.optionsStrings() {
+    //    fuse/server.go:func (o *MountOptions) optionsStrings() []string {
+    //
+    // Because 'optionsStrings' is called in the mount_* files, maybe it's indeed
+    // sufficient to change optionsStrings?
+    // This also makes sense, because we don't change the internal representation of
+    // our mount options with the escaped version, which is more difficult to handle
+    // and which shouldn't matter for the user. go-fuse could take care of escaping
+    // without the user having to think about this..
+
 	for _, s := range o.optionsStrings() {
-		if strings.Contains(s, ",") {
-            escapeComma(s)
-		}
+        escapeComma(s)
 	}
 
 	maxReaders := runtime.GOMAXPROCS(0)
@@ -249,6 +263,21 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 	// synchronously or asynchronously.
 	ms.loops.Add(1)
 	return ms, nil
+}
+
+func escapeComma(optionValue string) string {
+    // Perhaps if clause isn't even needed.
+    // We need to loop through each character of the string
+    // anyway, so we'll catch each comma anyway.
+    //
+    // Maybe it's very slightly more performant if we initially
+    // test if it contains a ','?
+    //
+    // But perhaps strings.Replace() is equally fast..
+
+    // if strings.Contains(s, ",") {}
+
+    return strings.Replace(optionValue, ",", "//", -1)
 }
 
 func (o *MountOptions) optionsStrings() []string {
