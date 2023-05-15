@@ -1,0 +1,32 @@
+we try to implement the following commits in libfuse in go-fuse:
+
+	https://github.com/libfuse/libfuse/commit/555d6b504308eac6b976321ce938ee4bec62c354
+	https://github.com/libfuse/libfuse/commit/28bdae3d113ef479c1660a581ef720cdc33bf466 (???)
+
+
+core code in libfuse where commas are escaped:
+	inside the function `add_opt_common`:
+
+	https://github.com/libfuse/libfuse/blob/db35a37de/lib/fuse_opt.c
+
+so it only happens if 'esc' (=escape) is true
+
+=> then there are two functions:
+
+- fuse_opt_add_opt
+- fuse_opt_add_opt_escaped
+
+the first function is called if we want to add an option which shouldn't be escapd
+the second function is called if we want to add an option which should be escapd
+
+Those functions are called in mount.c/fuse_mount_opt_proc
+
+	https://github.com/libfuse/libfuse/blob/dba6b3983/lib/mount.c#L187-L216
+
+	=> for fusermount options they always use 'fuse_opt_add_opt_escaped'
+	=> so it seems to be safe to escape any option, because in this patch
+           it's only about fusermount options anyway
+
+which on the other hand is called here (it's passed as 'proc'):
+
+	https://github.com/libfuse/libfuse/blob/db35a37def14b72181f3630efeea0e0433103c41/lib/fuse_opt.c#L398-L423

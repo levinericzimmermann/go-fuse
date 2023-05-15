@@ -246,17 +246,6 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 }
 
 func escapeComma(optionValue string) string {
-    // Perhaps if clause isn't even needed.
-    // We need to loop through each character of the string
-    // anyway, so we'll catch each comma anyway.
-    //
-    // Maybe it's very slightly more performant if we initially
-    // test if it contains a ','?
-    //
-    // But perhaps strings.Replace() is equally fast..
-
-    // if strings.Contains(s, ",") {}
-
     return strings.Replace(optionValue, ",", "//", -1)
 }
 
@@ -282,7 +271,11 @@ func (o *MountOptions) optionsStrings() []string {
 		r = append(r, "daemon_timeout=0")
 	}
 
+	// Commas in an option need to be escaped, because
+	// options are separated by a comma.
 	var rEscaped []string
+	bool escape_ok = begins_with(s, fsname_str) ||
+				 begins_with(s, subtype_str);
 	for _, s := range r {
 		rEscaped = append(rEscaped, escapeComma(s))
 	}
