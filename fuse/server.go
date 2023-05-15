@@ -246,7 +246,17 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 }
 
 func escapeComma(optionValue string) string {
-    return strings.Replace(optionValue, ",", "//", -1)
+	// What happens if the user already escaped the comma?
+	// (with something like fsname=my//,escapedoption)
+	//
+	// maybe
+	//
+	// strings.Replace(strings.Replace(optionValue, "//,", ",", -1), ",", "//,", -1)
+	//
+	// ?
+	//
+	// or should we simply accept this?
+	return strings.Replace(optionValue, ",", "//,", -1)
 }
 
 func (o *MountOptions) optionsStrings() []string {
@@ -274,8 +284,6 @@ func (o *MountOptions) optionsStrings() []string {
 	// Commas in an option need to be escaped, because
 	// options are separated by a comma.
 	var rEscaped []string
-	bool escape_ok = begins_with(s, fsname_str) ||
-				 begins_with(s, subtype_str);
 	for _, s := range r {
 		rEscaped = append(rEscaped, escapeComma(s))
 	}
