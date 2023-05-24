@@ -1,7 +1,10 @@
 we try to implement the following commits in libfuse in go-fuse:
 
+	https://github.com/libfuse/libfuse/commit/5c094ac0150ebfef6a2c9c2c9d1c545a90ff4e96
 	https://github.com/libfuse/libfuse/commit/555d6b504308eac6b976321ce938ee4bec62c354
-	https://github.com/libfuse/libfuse/commit/28bdae3d113ef479c1660a581ef720cdc33bf466 (???)
+
+	i don't think we wanna add this commit:
+		https://github.com/libfuse/libfuse/commit/28bdae3d113ef479c1660a581ef720cdc33bf466 (???)
 
 
 core code in libfuse where commas are escaped:
