@@ -246,16 +246,6 @@ func NewServer(fs RawFileSystem, mountPoint string, opts *MountOptions) (*Server
 }
 
 func escapeComma(optionValue string) string {
-	// What happens if the user already escaped the comma?
-	// (with something like fsname=my//,escapedoption)
-	//
-	// maybe
-	//
-	// strings.Replace(strings.Replace(optionValue, "//,", ",", -1), ",", "//,", -1)
-	//
-	// ?
-	//
-	// or should we simply accept this?
 	return strings.Replace(optionValue, ",", "//,", -1)
 }
 
